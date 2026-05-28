@@ -110,7 +110,6 @@
 .statValue {
   font-size: 28px;
   font-weight: 800;
-  font-family: var(--font-display);
   color: var(--text-primary);
   line-height: 1;
   letter-spacing: -0.02em;

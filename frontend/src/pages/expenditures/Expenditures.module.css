@@ -1,0 +1,124 @@
+/* ══════════════════════════════════════════════════════════════
+   Expenditures.module.css
+   ══════════════════════════════════════════════════════════════ */
+
+.page { color: var(--text-primary); }
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.eventSelector {
+  margin-bottom: 20px;
+}
+
+.statGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+/* ── Day group ─────────────────────────────────────────────── */
+.dayGroups {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.dayLabel {
+  margin: 0 0 8px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-family: var(--font-display);
+}
+
+/* ── Row inside card ───────────────────────────────────────── */
+.rowList {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.rowDesc {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.rowAddedBy {
+  margin: 2px 0 0;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.rowAmount {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--green);
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+/* ── Day subtotal ──────────────────────────────────────────── */
+.dayTotal {
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 10px;
+  margin-top: 4px;
+  border-top: 1px solid var(--border-2);
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.dayTotalNum {
+  font-weight: 700;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  margin-left: 4px;
+}
+
+/* ── Modal form ────────────────────────────────────────────── */
+.formCol {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+@media (max-width: 700px) {
+  .statGrid { grid-template-columns: 1fr 1fr; }
+}

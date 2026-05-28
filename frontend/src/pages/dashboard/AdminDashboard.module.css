@@ -1,0 +1,211 @@
+/* ══════════════════════════════════════════════════════════════
+   AdminDashboard.module.css  –  Admin Control Center
+   ══════════════════════════════════════════════════════════════ */
+
+.page {
+  color: var(--text-primary);
+}
+
+/* ── Header ────────────────────────────────────────────────── */
+.header {
+  margin-bottom: 24px;
+}
+
+.title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  letter-spacing: -0.01em;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* ── Stat Grid ─────────────────────────────────────────────── */
+.statGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+/* ── Two-column layout ─────────────────────────────────────── */
+.mainLayout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 24px;
+  align-items: start;
+}
+
+/* ── Panel header (event control) ──────────────────────────── */
+.panelHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.panelTitle {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+}
+
+/* ── Event cards list ──────────────────────────────────────── */
+.eventList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.eventCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.eventCardName {
+  margin: 0;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+}
+
+.eventCardLocation {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.eventCardMeta {
+  display: flex;
+  gap: 16px;
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+
+/* Numbers inside the meta row use the display font for punch */
+.metaNum {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 14px;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+.eventCardMetaOpen {
+  color: var(--green);
+  font-weight: 600;
+}
+
+.eventCardMetaClosed {
+  color: var(--text-muted);
+}
+
+.eventCardActions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* ── Activity feed ─────────────────────────────────────────── */
+.feedTitle {
+  margin: 0 0 16px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+}
+
+.feedEmpty {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-muted);
+  text-align: center;
+  padding: 20px 0;
+}
+
+.feedList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.feedEntry {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.feedEntry:last-child {
+  border-bottom: none;
+}
+
+.feedTime {
+  font-size: 11px;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  margin-top: 1px;
+  font-family: var(--font-display);
+}
+
+.feedMsg {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* ── Quick links ───────────────────────────────────────────── */
+.quickLinks {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.quickLinkBtn {
+  text-align: left;
+}
+
+/* ── Confirm modal ─────────────────────────────────────────── */
+.confirmText {
+  margin: 0 0 20px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.confirmActions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+/* ── Loading state ─────────────────────────────────────────── */
+.loadingWrap {
+  padding: 40px;
+}
+
+.loadingText {
+  text-align: center;
+  color: var(--text-muted);
+  margin-top: 12px;
+  font-size: 14px;
+}
+
+@media (max-width: 900px) {
+  .statGrid    { grid-template-columns: repeat(2, 1fr); }
+  .mainLayout  { grid-template-columns: 1fr; }
+}

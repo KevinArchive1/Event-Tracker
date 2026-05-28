@@ -48,7 +48,7 @@ export function Settings() {
   return (
     <div style={{ maxWidth: 600 }}>
       <h1 style={{ margin: "0 0 4px", fontSize: "22px", fontWeight: 700 }}>Settings</h1>
-      <p style={{ margin: "0 0 28px", color: "#9ca3af", fontSize: "13px" }}>Your account information</p>
+      <p style={{ margin: "0 0 28px", color: "#fff", fontSize: "13px" }}>Your account information</p>
 
       <Card style={{ marginBottom: 24 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
@@ -65,7 +65,7 @@ export function Settings() {
           {FIELD_ROWS.map(([label, value]) => (
             <div key={label} style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #f1f5f9", paddingBottom: 8 }}>
               <span style={{ fontSize: "13px", color: "#9ca3af", fontWeight: 600, textTransform: "capitalize" }}>{label}</span>
-              <span style={{ fontSize: "13px", color: "#111827" }}>{value}</span>
+              <span style={{ fontSize: "13px", color: "#fff" }}>{value}</span>
             </div>
           ))}
         </div>

@@ -3,6 +3,7 @@ import { useAuth } from "../../context/AuthContext";
 import { getAccidents, reportAccident } from "../../api/misc";
 import { Card, Badge, Button, Modal, Select, Alert, Spinner, EmptyState } from "../../components/ui/UI";
 import API from "../../api/axios";
+import styles from "./Accidents.module.css";
 
 const ACCIDENT_TYPES = [
   { value: "injury",   label: "Injury" },
@@ -11,6 +12,8 @@ const ACCIDENT_TYPES = [
   { value: "security", label: "Security" },
   { value: "other",    label: "Other" },
 ];
+
+const TYPE_ICON = { injury: "🤕", medical: "🏥", property: "🏗️", security: "🔒", other: "⚠️" };
 
 export function Accidents() {
   const { user } = useAuth();
@@ -59,24 +62,20 @@ export function Accidents() {
     }
   };
 
-  const TYPE_ICON = { injury: "🤕", medical: "🏥", property: "🏗️", security: "🔒", other: "⚠️" };
-
   return (
-    <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
-        <div>
-          <h1 style={{ margin: 0, fontSize: "22px", fontWeight: 700 }}>Accident Reports</h1>
-          <p style={{ margin: 0, color: "#9ca3af", fontSize: "13px" }}>Log and track incidents during events</p>
+    <div className={styles.page}>
+      <div className={styles.header}>
+        <div className={styles.headerLeft}>
+          <h1 className={styles.title}>Accident Reports</h1>
+          <p className={styles.subtitle}>Log and track incidents during events</p>
         </div>
         <Button variant="danger" onClick={() => setOpen(true)}>🚨 Report Accident</Button>
       </div>
 
-      {/* Filter */}
-      <div style={{ marginBottom: 16 }}>
+      <div className={styles.filterRow}>
         <Select
           value={eventFilter}
           onChange={(e) => { setEventFilter(e.target.value); load(e.target.value); }}
-          style={{ minWidth: 200 }}
         >
           <option value="">All Events</option>
           {events.map((ev) => <option key={ev.id} value={ev.id}>{ev.name}</option>)}
@@ -86,25 +85,27 @@ export function Accidents() {
       {loading && <Spinner />}
       {!loading && accidents.length === 0 && <EmptyState message="No accidents reported." />}
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 12 }}>
+      <div className={styles.cardGrid}>
         {accidents.map((a) => (
           <Card key={a.id}>
-            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-              <span style={{ fontSize: "24px" }}>{TYPE_ICON[a.accident_type] || "⚠️"}</span>
+            <div className={styles.cardTop}>
+              <span className={styles.cardIcon}>{TYPE_ICON[a.accident_type] || "⚠️"}</span>
               <Badge label={a.accident_type} />
             </div>
-            <p style={{ margin: "0 0 4px", fontSize: "13px", color: "#4b5563" }}>
-              {a.description || <em>No description</em>}
+            <p className={styles.cardDesc}>
+              {a.description || <em>No description provided</em>}
             </p>
-            <p style={{ margin: "8px 0 0", fontSize: "11px", color: "#9ca3af" }}>
-              Reporter: {a.reporter?.username} · {new Date(a.accident_time).toLocaleString()}
-            </p>
+            <div className={styles.cardMeta}>
+              <span>{a.reporter?.username}</span>
+              <span className={styles.cardMetaDot} />
+              <span>{new Date(a.accident_time).toLocaleString()}</span>
+            </div>
           </Card>
         ))}
       </div>
 
       <Modal open={open} onClose={() => setOpen(false)} title="Report an Accident">
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <div className={styles.formCol}>
           <Alert type="error" message={formError} />
           <Select label="Event" value={form.event} onChange={(e) => setForm({ ...form, event: e.target.value })}>
             <option value="">Select event…</option>
@@ -113,14 +114,13 @@ export function Accidents() {
           <Select label="Type" value={form.accident_type} onChange={(e) => setForm({ ...form, accident_type: e.target.value })}>
             {ACCIDENT_TYPES.map((t) => <option key={t.value} value={t.value}>{t.label}</option>)}
           </Select>
-          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            <label style={{ fontSize: "12px", fontWeight: 600, color: "#374151" }}>Description</label>
+          <div>
+            <label className={styles.formLabel}>Description</label>
             <textarea
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
               rows={3}
               placeholder="Describe what happened…"
-              style={{ padding: "9px 12px", borderRadius: "8px", border: "1px solid #e5e7eb", fontSize: "14px", resize: "vertical" }}
             />
           </div>
           <Button variant="danger" onClick={handleReport} disabled={formLoading}>

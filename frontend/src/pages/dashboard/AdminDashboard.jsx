@@ -14,10 +14,7 @@ export function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(null);
 
-  // Confirm modal: { eventId, action: "start"|"end" }
   const [confirm, setConfirm] = useState(null);
-
-  // Activity log — real entries built from live data diffs
   const [activityLog, setActivityLog] = useState([]);
   const prevEventsRef = useRef({});
 
@@ -38,18 +35,14 @@ export function AdminDashboard() {
       newEvents.forEach((ev) => {
         const old = prev[ev.id];
         if (!old) return;
-        if (old.status !== ev.status) {
+        if (old.status !== ev.status)
           addLog(`"${ev.name}" changed status: ${old.status} → ${ev.status}`);
-        }
-        if (old.attendance_open !== ev.attendance_open) {
+        if (old.attendance_open !== ev.attendance_open)
           addLog(`"${ev.name}" attendance ${ev.attendance_open ? "opened" : "closed"}`);
-        }
-        if (old.attendance_count !== ev.attendance_count) {
+        if (old.attendance_count !== ev.attendance_count)
           addLog(`New attendance submission on "${ev.name}"`);
-        }
-        if (old.approved_attendance_count !== ev.approved_attendance_count) {
+        if (old.approved_attendance_count !== ev.approved_attendance_count)
           addLog(`Attendance approved on "${ev.name}"`);
-        }
       });
 
       const newRef = {};
@@ -110,9 +103,9 @@ export function AdminDashboard() {
 
   if (loading || !metrics) {
     return (
-      <div style={{ padding: 40 }}>
+      <div className={styles.loadingWrap}>
         <Spinner />
-        <p style={{ textAlign: "center", color: "#9ca3af" }}>Loading control center…</p>
+        <p className={styles.loadingText}>Loading control center…</p>
       </div>
     );
   }
@@ -123,17 +116,17 @@ export function AdminDashboard() {
   );
 
   return (
-    <div>
+    <div className={styles.page}>
       {/* Header */}
-      <div style={{ marginBottom: 24 }}>
-        <h1 style={{ margin: 0, fontSize: "22px", fontWeight: 700 }}>🖥️ Admin Control Center</h1>
-        <p style={{ margin: 0, fontSize: "13px", color: "#9ca3af" }}>
+      <div className={styles.header}>
+        <h1 className={styles.title}>🖥️ Admin Control Center</h1>
+        <p className={styles.subtitle}>
           Live — refreshing every 5s · Last update: {new Date(liveData.timestamp).toLocaleTimeString()}
         </p>
       </div>
 
       {/* Stat cards */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 32 }}>
+      <div className={styles.statGrid}>
         <StatCard title="Active Events"    value={metrics.activeEvents}      icon="🟢" accent />
         <StatCard title="Total Attendance" value={metrics.totalAttendance}   icon="👥" />
         <StatCard title="Pending Reviews"  value={metrics.pendingAttendance} icon="🕐" />
@@ -141,18 +134,18 @@ export function AdminDashboard() {
       </div>
 
       {/* Two-column layout */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: 24, alignItems: "start" }}>
+      <div className={styles.mainLayout}>
 
         {/* Event control panel */}
         <div>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-            <h2 style={{ margin: 0, fontSize: "16px", fontWeight: 700 }}>Event Control Panel</h2>
+          <div className={styles.panelHeader}>
+            <h2 className={styles.panelTitle}>Event Control Panel</h2>
             <Button variant="outline" onClick={() => navigate("/events")}>
               + Manage Events
             </Button>
           </div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <div className={styles.eventList}>
             {sorted.map((event) => {
               const isStarting = actionLoading === event.id + "start";
               const isEnding   = actionLoading === event.id + "end";
@@ -160,25 +153,25 @@ export function AdminDashboard() {
 
               return (
                 <Card key={event.id}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 8 }}>
+                  <div className={styles.eventCardHeader}>
                     <div>
-                      <p style={{ margin: 0, fontWeight: 700, fontSize: "15px" }}>{event.name}</p>
+                      <p className={styles.eventCardName}>{event.name}</p>
                       {event.location && (
-                        <p style={{ margin: "2px 0 0", fontSize: "12px", color: "#9ca3af" }}>📍 {event.location}</p>
+                        <p className={styles.eventCardLocation}>📍 {event.location}</p>
                       )}
                     </div>
                     <Badge label={event.status} />
                   </div>
 
-                  <div style={{ display: "flex", gap: 16, fontSize: "12px", color: "#6b7280", marginBottom: 12 }}>
-                    <span>👥 {event.attendance_count ?? 0}</span>
-                    <span>✅ {event.approved_attendance_count ?? 0} approved</span>
-                    <span style={{ color: event.attendance_open ? "#15803d" : "#9ca3af" }}>
+                  <div className={styles.eventCardMeta}>
+                    <span>👥 <span className={styles.metaNum}>{event.attendance_count ?? 0}</span></span>
+                    <span><span className={styles.metaNum}>{event.approved_attendance_count ?? 0}</span> approved</span>
+                    <span className={event.attendance_open ? styles.eventCardMetaOpen : styles.eventCardMetaClosed}>
                       {event.attendance_open ? "🟢 Attendance open" : "⚫ Closed"}
                     </span>
                   </div>
 
-                  <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                  <div className={styles.eventCardActions}>
                     <Button variant="ghost" onClick={() => navigate(`/events/${event.id}`)}>
                       View
                     </Button>
@@ -212,44 +205,35 @@ export function AdminDashboard() {
 
         {/* Activity feed */}
         <div>
-          <h2 style={{ margin: "0 0 16px", fontSize: "16px", fontWeight: 700 }}>📡 Activity Feed</h2>
-          <Card style={{ padding: "12px 16px" }}>
+          <h2 className={styles.feedTitle}>📡 Activity Feed</h2>
+          <Card>
             {activityLog.length === 0 && (
-              <p style={{ margin: 0, fontSize: "13px", color: "#9ca3af", textAlign: "center", padding: "20px 0" }}>
+              <p className={styles.feedEmpty}>
                 Monitoring… changes will appear here.
               </p>
             )}
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <div className={styles.feedList}>
               {activityLog.map((entry) => (
-                <div
-                  key={entry.id}
-                  style={{
-                    display: "flex", gap: 10, alignItems: "flex-start",
-                    padding: "6px 0",
-                    borderBottom: "1px solid #f1f5f9",
-                  }}
-                >
-                  <span style={{ fontSize: "11px", color: "#9ca3af", flexShrink: 0, marginTop: 1 }}>
-                    {entry.time}
-                  </span>
-                  <span style={{ fontSize: "12px", color: "#374151" }}>{entry.msg}</span>
+                <div key={entry.id} className={styles.feedEntry}>
+                  <span className={styles.feedTime}>{entry.time}</span>
+                  <span className={styles.feedMsg}>{entry.msg}</span>
                 </div>
               ))}
             </div>
           </Card>
 
           {/* Quick links */}
-          <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 8 }}>
-            <Button variant="ghost" onClick={() => navigate("/attendance-review")} style={{ textAlign: "left" }}>
+          <div className={styles.quickLinks}>
+            <Button variant="ghost" className={styles.quickLinkBtn} onClick={() => navigate("/attendance-review")}>
               🔍 Review Attendance
             </Button>
-            <Button variant="ghost" onClick={() => navigate("/analytics")} style={{ textAlign: "left" }}>
+            <Button variant="ghost" className={styles.quickLinkBtn} onClick={() => navigate("/analytics")}>
               📈 Analytics
             </Button>
-            <Button variant="ghost" onClick={() => navigate("/accidents")} style={{ textAlign: "left" }}>
+            <Button variant="ghost" className={styles.quickLinkBtn} onClick={() => navigate("/accidents")}>
               🚨 Accident Reports
             </Button>
-            <Button variant="ghost" onClick={() => navigate("/reports")} style={{ textAlign: "left" }}>
+            <Button variant="ghost" className={styles.quickLinkBtn} onClick={() => navigate("/reports")}>
               📝 Committee Reports
             </Button>
           </div>
@@ -262,12 +246,12 @@ export function AdminDashboard() {
         onClose={() => setConfirm(null)}
         title={confirm?.action === "end" ? "⚠️ End Event?" : "▶ Start Event?"}
       >
-        <p style={{ margin: "0 0 20px", fontSize: "14px", color: "#4b5563" }}>
+        <p className={styles.confirmText}>
           {confirm?.action === "end"
             ? `Are you sure you want to end "${confirm?.name}"? This cannot be undone — the event status will be set to ended permanently.`
             : `Start "${confirm?.name}"? Its status will change to active and students will be able to pick and attend.`}
         </p>
-        <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
+        <div className={styles.confirmActions}>
           <Button variant="ghost" onClick={() => setConfirm(null)}>Cancel</Button>
           <Button
             variant={confirm?.action === "end" ? "danger" : "success"}

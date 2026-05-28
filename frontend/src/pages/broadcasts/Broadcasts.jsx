@@ -4,6 +4,7 @@ import { getBroadcasts, sendBroadcast } from "../../api/broadcasts";
 import { getCommitteeMembers } from "../../api/misc";
 import { Card, Button, Modal, Input, Select, Alert, Spinner, EmptyState } from "../../components/ui/UI";
 import API from "../../api/axios";
+import styles from "./Broadcasts.module.css";
 
 export function Broadcasts() {
   const { user } = useAuth();
@@ -37,7 +38,6 @@ export function Broadcasts() {
     }
   }, []);
 
-  // When event changes, load that event's committee members for the target dropdown
   const handleEventChange = async (eventId) => {
     setForm((f) => ({ ...f, event: eventId, target_committee: "" }));
     if (!eventId) { setCommitteeMembers([]); return; }
@@ -76,11 +76,11 @@ export function Broadcasts() {
   };
 
   return (
-    <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+    <div className={styles.page}>
+      <div className={styles.header}>
         <div>
-          <h1 style={{ margin: 0, fontSize: "22px", fontWeight: 700 }}>Broadcasts</h1>
-          <p style={{ margin: 0, color: "#9ca3af", fontSize: "13px" }}>
+          <h1 className={styles.title}>Broadcasts</h1>
+          <p className={styles.subtitle}>
             {isAdmin ? "Send and view broadcasts" : "Messages from admins"}
           </p>
         </div>
@@ -90,57 +90,46 @@ export function Broadcasts() {
       {loading && <Spinner />}
       {!loading && broadcasts.length === 0 && <EmptyState message="No broadcasts yet." />}
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+      <div className={styles.list}>
         {broadcasts.map((b) => (
           <Card key={b.id}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
-              <p style={{ margin: 0, fontWeight: 700, fontSize: "15px" }}>{b.title}</p>
-              <p style={{ margin: 0, fontSize: "11px", color: "#9ca3af" }}>
-                {new Date(b.created_at).toLocaleString()}
-              </p>
+            <div className={styles.cardHeader}>
+              <p className={styles.cardTitle}>{b.title}</p>
+              <p className={styles.cardTime}>{new Date(b.created_at).toLocaleString()}</p>
             </div>
-            <p style={{ margin: "0 0 8px", fontSize: "13px", color: "#4b5563" }}>{b.message}</p>
-            <p style={{ margin: 0, fontSize: "11px", color: "#9ca3af" }}>
+            <p className={styles.cardBody}>{b.message}</p>
+            <p className={styles.cardMeta}>
               From: {b.admin?.username}
-              {b.target_committee && ` → targeted`}
+              {b.target_committee && (
+                <span className={styles.cardMetaTargeted}>targeted</span>
+              )}
             </p>
           </Card>
         ))}
       </div>
 
       <Modal open={open} onClose={() => { setOpen(false); setCommitteeMembers([]); }} title="Send Broadcast">
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <div className={styles.formCol}>
           <Alert type="error" message={formError} />
-
-          {/* Event selector — also loads committee members */}
-          <Select
-            label="Event"
-            value={form.event}
-            onChange={(e) => handleEventChange(e.target.value)}
-          >
+          <Select label="Event" value={form.event} onChange={(e) => handleEventChange(e.target.value)}>
             <option value="">Select event…</option>
             {events.map((ev) => <option key={ev.id} value={ev.id}>{ev.name}</option>)}
           </Select>
-
           <Input
             label="Title"
             value={form.title}
             onChange={(e) => setForm({ ...form, title: e.target.value })}
             placeholder="Broadcast title"
           />
-
-          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            <label style={{ fontSize: "12px", fontWeight: 600, color: "#374151" }}>Message</label>
+          <div>
+            <label className={styles.formLabel}>Message</label>
             <textarea
               value={form.message}
               onChange={(e) => setForm({ ...form, message: e.target.value })}
               rows={4}
               placeholder="Your message…"
-              style={{ padding: "9px 12px", borderRadius: "8px", border: "1px solid #e5e7eb", fontSize: "14px", resize: "vertical" }}
             />
           </div>
-
-          {/* Target — dropdown of committee members instead of raw ID */}
           <Select
             label="Target (optional — leave blank to send to all)"
             value={form.target_committee}
@@ -156,11 +145,8 @@ export function Broadcasts() {
             ))}
           </Select>
           {form.event && committeeMembers.length === 0 && (
-            <p style={{ margin: 0, fontSize: "12px", color: "#9ca3af" }}>
-              No committee members found for this event.
-            </p>
+            <p className={styles.noMembers}>No committee members found for this event.</p>
           )}
-
           <Button onClick={handleSend} disabled={formLoading}>
             {formLoading ? "Sending…" : "Send"}
           </Button>

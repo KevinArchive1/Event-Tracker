@@ -1,16 +1,19 @@
 import { useEffect, useState } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { getExpenditures, addExpenditure } from "../../api/misc";
 import API from "../../api/axios";
 import { Card, StatCard, Button, Modal, Input, Select, Alert, Spinner, EmptyState } from "../../components/ui/UI";
+import styles from "./Expenditures.module.css";
+
+function today() {
+  return new Date().toISOString().slice(0, 10);
+}
 
 export function Expenditures() {
   const { user } = useAuth();
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const preselectedEvent = searchParams.get("event") || "";
-
   const isAdmin = user?.role === "admin";
 
   const [events, setEvents] = useState([]);
@@ -18,15 +21,10 @@ export function Expenditures() {
   const [expenditures, setExpenditures] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Add modal
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({ description: "", amount: "", spent_on: today() });
   const [formError, setFormError] = useState("");
   const [formLoading, setFormLoading] = useState(false);
-
-  function today() {
-    return new Date().toISOString().slice(0, 10);
-  }
 
   const load = async (eid = eventId) => {
     if (!eid) return;
@@ -45,9 +43,7 @@ export function Expenditures() {
     API.get("/events/").then((r) => setEvents(r.data)).catch(console.error);
   }, []);
 
-  useEffect(() => {
-    load();
-  }, [eventId]);
+  useEffect(() => { load(); }, [eventId]);
 
   const handleAdd = async () => {
     setFormError("");
@@ -72,7 +68,6 @@ export function Expenditures() {
 
   const total = expenditures.reduce((sum, e) => sum + parseFloat(e.amount || 0), 0);
 
-  // Group by date
   const grouped = expenditures.reduce((acc, e) => {
     const day = e.spent_on;
     if (!acc[day]) acc[day] = [];
@@ -81,25 +76,19 @@ export function Expenditures() {
   }, {});
 
   return (
-    <div>
-      {/* Header */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+    <div className={styles.page}>
+      <div className={styles.header}>
         <div>
-          <h1 style={{ margin: 0, fontSize: "22px", fontWeight: 700 }}>Expenditures</h1>
-          <p style={{ margin: 0, color: "#9ca3af", fontSize: "13px" }}>Track event spending</p>
+          <h1 className={styles.title}>Expenditures</h1>
+          <p className={styles.subtitle}>Track event spending</p>
         </div>
         {isAdmin && eventId && (
           <Button onClick={() => setOpen(true)}>+ Add Expenditure</Button>
         )}
       </div>
 
-      {/* Event selector */}
-      <div style={{ marginBottom: 20 }}>
-        <Select
-          value={eventId}
-          onChange={(e) => setEventId(e.target.value)}
-          style={{ minWidth: 220 }}
-        >
+      <div className={styles.eventSelector}>
+        <Select value={eventId} onChange={(e) => setEventId(e.target.value)}>
           <option value="">Select an event…</option>
           {events.map((ev) => (
             <option key={ev.id} value={ev.id}>{ev.name}</option>
@@ -107,74 +96,58 @@ export function Expenditures() {
         </Select>
       </div>
 
-      {!eventId && (
-        <EmptyState message="Select an event to view expenditures." />
-      )}
-
+      {!eventId && <EmptyState message="Select an event to view expenditures." />}
       {eventId && loading && <Spinner />}
 
       {eventId && !loading && (
         <>
-          {/* Summary */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, marginBottom: 24 }}>
-            <StatCard title="Total Spent"   value={`₱${total.toLocaleString("en-PH", { minimumFractionDigits: 2 })}`} accent icon="💰" />
-            <StatCard title="Transactions"  value={expenditures.length} icon="🧾" />
-            <StatCard title="Unique Days"   value={Object.keys(grouped).length} icon="📅" />
+          <div className={styles.statGrid}>
+            <StatCard
+              title="Total Spent"
+              value={`₱${total.toLocaleString("en-PH", { minimumFractionDigits: 2 })}`}
+              accent
+              icon="💰"
+            />
+            <StatCard title="Transactions" value={expenditures.length} icon="🧾" />
+            <StatCard title="Unique Days" value={Object.keys(grouped).length} icon="📅" />
           </div>
 
-          {expenditures.length === 0 && <EmptyState message="No expenditures logged for this event." />}
+          {expenditures.length === 0 && (
+            <EmptyState message="No expenditures logged for this event." />
+          )}
 
-          {/* Grouped by date */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+          <div className={styles.dayGroups}>
             {Object.entries(grouped)
               .sort(([a], [b]) => new Date(b) - new Date(a))
               .map(([date, items]) => (
                 <div key={date}>
-                  <p style={{ margin: "0 0 8px", fontSize: "12px", fontWeight: 700, color: "#9ca3af", textTransform: "uppercase", letterSpacing: "0.05em" }}>
-                    {new Date(date + "T00:00:00").toLocaleDateString("en-PH", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}
+                  <p className={styles.dayLabel}>
+                    {new Date(date + "T00:00:00").toLocaleDateString("en-PH", {
+                      weekday: "long", year: "numeric", month: "long", day: "numeric",
+                    })}
                   </p>
                   <Card>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
-                      {items.map((item, idx) => (
-                        <div
-                          key={item.id}
-                          style={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            padding: "10px 0",
-                            borderBottom: idx < items.length - 1 ? "1px solid #f1f5f9" : "none",
-                          }}
-                        >
+                    <div className={styles.rowList}>
+                      {items.map((item) => (
+                        <div key={item.id} className={styles.row}>
                           <div>
-                            <p style={{ margin: 0, fontSize: "14px", fontWeight: 500, color: "#111827" }}>
-                              {item.description}
-                            </p>
-                            <p style={{ margin: "2px 0 0", fontSize: "11px", color: "#9ca3af" }}>
+                            <p className={styles.rowDesc}>{item.description}</p>
+                            <p className={styles.rowAddedBy}>
                               Added by {item.added_by?.username} · {new Date(item.created_at).toLocaleTimeString()}
                             </p>
                           </div>
-                          <span style={{ fontSize: "15px", fontWeight: 700, color: "#15803d" }}>
+                          <span className={styles.rowAmount}>
                             ₱{parseFloat(item.amount).toLocaleString("en-PH", { minimumFractionDigits: 2 })}
                           </span>
                         </div>
                       ))}
                     </div>
-
-                    {/* Day subtotal */}
-                    <div style={{
-                      display: "flex",
-                      justifyContent: "flex-end",
-                      paddingTop: 10,
-                      marginTop: 4,
-                      borderTop: "2px solid #f1f5f9",
-                    }}>
-                      <span style={{ fontSize: "13px", color: "#6b7280" }}>
-                        Day total:&nbsp;
-                        <strong style={{ color: "#111827" }}>
-                          ₱{items.reduce((s, i) => s + parseFloat(i.amount || 0), 0)
-                            .toLocaleString("en-PH", { minimumFractionDigits: 2 })}
-                        </strong>
+                    <div className={styles.dayTotal}>
+                      Day total:
+                      <span className={styles.dayTotalNum}>
+                        &nbsp;₱{items
+                          .reduce((s, i) => s + parseFloat(i.amount || 0), 0)
+                          .toLocaleString("en-PH", { minimumFractionDigits: 2 })}
                       </span>
                     </div>
                   </Card>
@@ -184,9 +157,8 @@ export function Expenditures() {
         </>
       )}
 
-      {/* Add Expenditure Modal */}
       <Modal open={open} onClose={() => setOpen(false)} title="Add Expenditure">
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <div className={styles.formCol}>
           <Alert type="error" message={formError} />
           <Input
             label="Description *"
