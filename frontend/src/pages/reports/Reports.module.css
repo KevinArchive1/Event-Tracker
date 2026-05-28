@@ -1,0 +1,71 @@
+/* ── Reports.module.css ─────────────────────────────────────── */
+.page { color: var(--text-primary); }
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+.subtitle { margin: 0; font-size: 13px; color: var(--text-muted); }
+
+.tabBar { display: flex; gap: 8px; margin-bottom: 20px; }
+
+.tab {
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: var(--font-display);
+  font-weight: 500;
+  background: var(--surface-2);
+  color: var(--text-secondary);
+  transition: background 0.15s, color 0.15s;
+}
+
+.tabActive { background: var(--accent); color: #061a17; font-weight: 700; }
+
+.tabBadge {
+  margin-left: 5px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 99px;
+  padding: 1px 7px;
+  font-size: 11px;
+}
+
+.tabBadgeInactive {
+  margin-left: 5px;
+  background: var(--border-2);
+  border-radius: 99px;
+  padding: 1px 7px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.reportTitle { margin: 0; font-weight: 700; font-size: 15px; color: var(--text-primary); }
+.reportMeta { margin: 2px 0 0; font-size: 12px; color: var(--text-muted); }
+.reportBody { margin: 0 0 10px; font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+
+.adminResponse {
+  background: rgba(0,229,195,0.07);
+  border: 1px solid rgba(0,229,195,0.18);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 13px;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+
+.formCol { display: flex; flex-direction: column; gap: 12px; }
+.respondText { margin: 0; font-size: 13px; color: var(--text-muted); }

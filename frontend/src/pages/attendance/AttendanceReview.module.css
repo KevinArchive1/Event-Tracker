@@ -1,0 +1,165 @@
+.page {
+  color: var(--text-primary);
+}
+
+.header {
+  margin-bottom: 24px;
+}
+
+.title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.filterRow {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.searchInput {
+  padding: 9px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--border-2);
+  font-size: 14px;
+  outline: none;
+  min-width: 200px;
+  background: var(--bg-2);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.searchInput::placeholder {
+  color: var(--text-muted);
+}
+
+.searchInput:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
+
+.tabBar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+
+.tab {
+  padding: 7px 14px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: var(--font-display);
+  font-weight: 500;
+  background: var(--surface-2);
+  color: var(--text-secondary);
+  transition: background 0.15s, color 0.15s;
+}
+
+.tabActive {
+  background: var(--accent);
+  color: #061a17;
+  font-weight: 700;
+}
+
+.tabCount {
+  margin-left: 6px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 99px;
+  padding: 1px 7px;
+  font-size: 11px;
+}
+
+.tabCountInactive {
+  margin-left: 6px;
+  background: var(--border-2);
+  border-radius: 99px;
+  padding: 1px 7px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.studentName {
+  margin: 0;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.studentMeta {
+  margin: 0;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.submittedAt {
+  margin: 0 0 10px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.reviewNote {
+  margin: 8px 0 0;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.proofImg {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 10px;
+  border: 1px solid var(--border);
+  transition: opacity 0.15s;
+}
+
+.proofImg:hover { opacity: 0.85; }
+
+.confirmText {
+  margin: 0 0 20px;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lightboxImg {
+  max-width: 88%;
+  max-height: 88%;
+  border-radius: 10px;
+}
+
+.lightboxHint {
+  position: absolute;
+  bottom: 24px;
+  color: var(--text-muted);
+  font-size: 13px;
+}

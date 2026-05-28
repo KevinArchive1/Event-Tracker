@@ -1,0 +1,196 @@
+.page {
+  color: var(--text-primary);
+}
+
+.greeting {
+  margin-bottom: 28px;
+}
+
+.greetingName {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+.greetingRole {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.statGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.mainLayout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 24px;
+  align-items: start;
+}
+
+.panelHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.panelTitle {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+}
+
+.tabBar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.tab {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  font-family: var(--font-display);
+  background: var(--surface-2);
+  color: var(--text-secondary);
+  font-weight: 500;
+  transition: background 0.15s, color 0.15s;
+}
+
+.tab:hover {
+  color: var(--text-primary);
+}
+
+.tabActive {
+  background: var(--accent);
+  color: #061a17;
+  font-weight: 700;
+}
+
+.tabCount {
+  margin-left: 5px;
+  background: rgba(255,255,255,0.2);
+  border-radius: 99px;
+  padding: 1px 6px;
+  font-size: 10px;
+}
+
+.tabCountInactive {
+  margin-left: 5px;
+  background: var(--border-2);
+  border-radius: 99px;
+  padding: 1px 6px;
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.attendanceGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.attStudentName {
+  margin: 0;
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.attStudentUser {
+  margin: 0;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.rightPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.rightTitle {
+  margin: 0 0 12px;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+}
+
+.eventCardName {
+  margin: 0 0 4px;
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.eventCardLocation {
+  margin: 0 0 6px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.broadcastTitle {
+  margin: 0 0 2px;
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.broadcastBody {
+  margin: 0 0 4px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.broadcastMeta {
+  margin: 0;
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.confirmText {
+  margin: 0 0 20px;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lightboxImg {
+  max-width: 88%;
+  max-height: 88%;
+  border-radius: 10px;
+}
+
+.lightboxHint {
+  position: absolute;
+  bottom: 24px;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+@media (max-width: 900px) {
+  .statGrid { grid-template-columns: repeat(2, 1fr); }
+  .mainLayout { grid-template-columns: 1fr; }
+}

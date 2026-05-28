@@ -1,0 +1,77 @@
+.page {
+  color: var(--text-primary);
+}
+
+.eventName {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  transition: color 0.15s;
+}
+
+.eventName:hover {
+  color: var(--accent);
+}
+
+.eventLocation {
+  margin: 0 0 4px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.eventDesc {
+  margin: 0 0 10px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.metaRow {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 10px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.metaNum {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+}
+
+.statusOpen {
+  margin: 0 0 12px;
+  font-size: 12px;
+  color: var(--green);
+  font-weight: 600;
+}
+
+.statusClosed {
+  margin: 0 0 12px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 16px;
+}
+
+.confirmText {
+  margin: 0 0 20px;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.formCol {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}

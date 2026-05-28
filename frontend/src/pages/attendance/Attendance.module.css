@@ -1,0 +1,149 @@
+.page {
+  color: var(--text-primary);
+}
+
+.header {
+  margin-bottom: 24px;
+}
+
+.title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.tabBar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.tab {
+  padding: 8px 18px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: var(--font-display);
+  font-weight: 500;
+  background: var(--surface-2);
+  color: var(--text-secondary);
+  transition: background 0.15s, color 0.15s;
+}
+
+.tabActive {
+  background: var(--accent);
+  color: #061a17;
+  font-weight: 700;
+}
+
+.submitWrap {
+  max-width: 480px;
+}
+
+.formTitle {
+  margin: 0 0 16px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+}
+
+.fileLabel {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fileInput {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.preview {
+  width: 100%;
+  max-height: 220px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+/* My submissions */
+.subList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.subEventName {
+  margin: 0;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--text-primary);
+}
+
+.subDate {
+  margin: 0;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.reviewNote {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.reviewedBy {
+  margin: 4px 0 0;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.thumbnail {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-left: 16px;
+  cursor: pointer;
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+  transition: opacity 0.15s;
+}
+
+.thumbnail:hover { opacity: 0.8; }
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.85);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lightboxImg {
+  max-width: 88%;
+  max-height: 88%;
+  border-radius: 10px;
+}
+
+.lightboxHint {
+  position: absolute;
+  bottom: 24px;
+  color: var(--text-muted);
+  font-size: 13px;
+}
