@@ -5,6 +5,7 @@ import { Badge, Button, Card, Select, Spinner, EmptyState, Alert, Modal } from "
 
 export function AttendanceReview() {
   const [events, setEvents] = useState([]);
+  const [eventsLoaded, setEventsLoaded] = useState(false);
   const [eventId, setEventId] = useState("");
   const [attendance, setAttendance] = useState([]);
   const [filter, setFilter] = useState("pending");
@@ -19,9 +20,10 @@ export function AttendanceReview() {
   useEffect(() => {
     API.get("/events/")
       .then((r) => {
-        // Review endpoint only works for ended events — filter and label accordingly
+        // Review endpoint only works for ended events — filter accordingly
         const ended = r.data.filter((e) => e.status === "ended");
         setEvents(ended);
+        setEventsLoaded(true);
       })
       .catch(console.error);
   }, []);
@@ -85,105 +87,113 @@ export function AttendanceReview() {
         </p>
       </div>
 
-      <div style={{ display: "flex", gap: 10, marginBottom: 16, flexWrap: "wrap" }}>
-        <Select value={eventId} onChange={handleEventChange} style={{ minWidth: 240 }}>
-          <option value="">Select an ended event…</option>
-          {events.length === 0 && <option disabled>No ended events yet</option>}
-          {events.map((ev) => (
-            <option key={ev.id} value={ev.id}>{ev.name}</option>
-          ))}
-        </Select>
-        <input
-          placeholder="Search by username…"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          style={{ padding: "9px 12px", borderRadius: "8px", border: "1px solid #e5e7eb", fontSize: "14px", outline: "none", minWidth: 200 }}
-        />
-      </div>
-
-      {/* Filter tabs */}
-      <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
-        {["pending", "approved", "rejected"].map((t) => (
-          <button
-            key={t}
-            onClick={() => setFilter(t)}
-            style={{
-              padding: "7px 14px", borderRadius: "8px", border: "none", cursor: "pointer",
-              fontSize: "13px", fontWeight: filter === t ? 700 : 400,
-              background: filter === t ? "#6366f1" : "#f3f4f6",
-              color: filter === t ? "#fff" : "#374151",
-            }}
-          >
-            {t.charAt(0).toUpperCase() + t.slice(1)}
-            {eventId && (
-              <span style={{
-                marginLeft: 6, background: filter === t ? "rgba(255,255,255,0.25)" : "#e5e7eb",
-                borderRadius: "99px", padding: "1px 7px", fontSize: "11px",
-              }}>
-                {counts[t]}
-              </span>
-            )}
-          </button>
-        ))}
-      </div>
-
-      {error   && <Alert type="error"   message={error}   />}
-      {success && <Alert type="success" message={success} />}
-      <div style={{ height: (error || success) ? 12 : 0 }} />
-
-      {loading && <Spinner />}
-      {!loading && eventId && filtered.length === 0 && (
-        <EmptyState message={`No ${filter} submissions found.`} />
-      )}
-      {!eventId && !loading && (
-        <EmptyState message="Select an ended event above to start reviewing." />
+      {/* Show a clear message if there are no ended events at all */}
+      {eventsLoaded && events.length === 0 && (
+        <EmptyState message="No ended events yet. Attendance review is available once an event has ended." />
       )}
 
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 16 }}>
-        {filtered.map((item) => (
-          <Card key={item.id}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
-              <div>
-                <p style={{ margin: 0, fontWeight: 700, fontSize: "14px" }}>
-                  {item.student?.first_name
-                    ? `${item.student.first_name} ${item.student.last_name}`
-                    : item.student?.username}
-                </p>
-                <p style={{ margin: 0, fontSize: "11px", color: "#9ca3af" }}>
-                  @{item.student?.username} · {item.student?.course || "—"}
-                </p>
-              </div>
-              <Badge label={item.status} />
-            </div>
-            <img
-              src={item.image_proof}
-              alt="proof"
-              onClick={() => setSelectedImage(item.image_proof)}
-              style={{ width: "100%", height: "160px", objectFit: "cover", borderRadius: "8px", cursor: "pointer", marginBottom: 10, border: "1px solid #f1f5f9" }}
+      {eventsLoaded && events.length > 0 && (
+        <>
+          <div style={{ display: "flex", gap: 10, marginBottom: 16, flexWrap: "wrap" }}>
+            <Select value={eventId} onChange={handleEventChange} style={{ minWidth: 240 }}>
+              <option value="">Select an ended event…</option>
+              {events.map((ev) => (
+                <option key={ev.id} value={ev.id}>{ev.name}</option>
+              ))}
+            </Select>
+            <input
+              placeholder="Search by username…"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              style={{ padding: "9px 12px", borderRadius: "8px", border: "1px solid #e5e7eb", fontSize: "14px", outline: "none", minWidth: 200 }}
             />
-            <p style={{ margin: "0 0 10px", fontSize: "11px", color: "#9ca3af" }}>
-              Submitted: {new Date(item.submitted_at).toLocaleString()}
-            </p>
-            <div style={{ display: "flex", gap: 8 }}>
-              <Button
-                variant="success"
-                disabled={item.status === "approved" || actionLoading === item.id}
-                onClick={() => setConfirm({ id: item.id, status: "approved" })}
-                style={{ flex: 1 }}
-              >✓ Approve</Button>
-              <Button
-                variant="danger"
-                disabled={item.status === "rejected" || actionLoading === item.id}
-                onClick={() => setConfirm({ id: item.id, status: "rejected" })}
-                style={{ flex: 1 }}
-              >✕ Reject</Button>
-            </div>
-            {item.review_note && (
-              <p style={{ margin: "8px 0 0", fontSize: "11px", color: "#6b7280" }}>Note: {item.review_note}</p>
-            )}
-          </Card>
-        ))}
-      </div>
+          </div>
+
+          {/* Filter tabs */}
+          <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
+            {["pending", "approved", "rejected"].map((t) => (
+              <button
+                key={t}
+                onClick={() => setFilter(t)}
+                style={{
+                  padding: "7px 14px", borderRadius: "8px", border: "none", cursor: "pointer",
+                  fontSize: "13px", fontWeight: filter === t ? 700 : 400,
+                  background: filter === t ? "#6366f1" : "#f3f4f6",
+                  color: filter === t ? "#fff" : "#374151",
+                }}
+              >
+                {t.charAt(0).toUpperCase() + t.slice(1)}
+                {eventId && (
+                  <span style={{
+                    marginLeft: 6, background: filter === t ? "rgba(255,255,255,0.25)" : "#e5e7eb",
+                    borderRadius: "99px", padding: "1px 7px", fontSize: "11px",
+                  }}>
+                    {counts[t]}
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
+
+          {error   && <Alert type="error"   message={error}   />}
+          {success && <Alert type="success" message={success} />}
+          <div style={{ height: (error || success) ? 12 : 0 }} />
+
+          {loading && <Spinner />}
+          {!loading && eventId && filtered.length === 0 && (
+            <EmptyState message={`No ${filter} submissions found.`} />
+          )}
+          {!eventId && !loading && (
+            <EmptyState message="Select an ended event above to start reviewing." />
+          )}
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 16 }}>
+            {filtered.map((item) => (
+              <Card key={item.id}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
+                  <div>
+                    <p style={{ margin: 0, fontWeight: 700, fontSize: "14px" }}>
+                      {item.student?.first_name
+                        ? `${item.student.first_name} ${item.student.last_name}`
+                        : item.student?.username}
+                    </p>
+                    <p style={{ margin: 0, fontSize: "11px", color: "#9ca3af" }}>
+                      @{item.student?.username} · {item.student?.course || "—"}
+                    </p>
+                  </div>
+                  <Badge label={item.status} />
+                </div>
+                <img
+                  src={item.image_proof}
+                  alt="proof"
+                  onClick={() => setSelectedImage(item.image_proof)}
+                  style={{ width: "100%", height: "160px", objectFit: "cover", borderRadius: "8px", cursor: "pointer", marginBottom: 10, border: "1px solid #f1f5f9" }}
+                />
+                <p style={{ margin: "0 0 10px", fontSize: "11px", color: "#9ca3af" }}>
+                  Submitted: {new Date(item.submitted_at).toLocaleString()}
+                </p>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <Button
+                    variant="success"
+                    disabled={item.status === "approved" || actionLoading === item.id}
+                    onClick={() => setConfirm({ id: item.id, status: "approved" })}
+                    style={{ flex: 1 }}
+                  >✓ Approve</Button>
+                  <Button
+                    variant="danger"
+                    disabled={item.status === "rejected" || actionLoading === item.id}
+                    onClick={() => setConfirm({ id: item.id, status: "rejected" })}
+                    style={{ flex: 1 }}
+                  >✕ Reject</Button>
+                </div>
+                {item.review_note && (
+                  <p style={{ margin: "8px 0 0", fontSize: "11px", color: "#6b7280" }}>Note: {item.review_note}</p>
+                )}
+              </Card>
+            ))}
+          </div>
+        </>
+      )}
 
       {/* Lightbox */}
       {selectedImage && (

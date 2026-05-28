@@ -73,8 +73,8 @@ export function AdminDashboard() {
   }, []);
 
   const metrics = liveData ? {
-    activeEvents:     liveData.events.filter((e) => e.status === "active").length,
-    totalAttendance:  liveData.events.reduce((s, e) => s + e.attendance_population, 0),
+    activeEvents:      liveData.events.filter((e) => e.status === "active").length,
+    totalAttendance:   liveData.events.reduce((s, e) => s + e.attendance_population, 0),
     pendingAttendance: liveData.events.reduce(
       (s, e) => s + (e.attendance_population - e.approved_attendance_population), 0
     ),
@@ -128,18 +128,18 @@ export function AdminDashboard() {
     <div>
       {/* Header */}
       <div style={{ marginBottom: 24 }}>
-        <h1 style={{ margin: 0, fontSize: "22px", fontWeight: 700 }}> Admin Control Center</h1>
+        <h1 style={{ margin: 0, fontSize: "22px", fontWeight: 700 }}>🖥️ Admin Control Center</h1>
         <p style={{ margin: 0, fontSize: "13px", color: "#9ca3af" }}>
           Live — refreshing every 5s · Last update: {new Date(liveData.timestamp).toLocaleTimeString()}
         </p>
       </div>
 
-      {/* Stat cards */}
+      {/* Stat cards — restored emoji icons */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 32 }}>
-        <StatCard title="Active Events"    value={metrics.activeEvents}     icon="" accent />
-        <StatCard title="Total Attendance" value={metrics.totalAttendance}  icon="" />
-        <StatCard title="Pending Reviews"  value={metrics.pendingAttendance} icon="" />
-        <StatCard title="Accidents"        value={metrics.accidentCount}    icon="" />
+        <StatCard title="Active Events"    value={metrics.activeEvents}      icon="🟢" accent />
+        <StatCard title="Total Attendance" value={metrics.totalAttendance}   icon="👥" />
+        <StatCard title="Pending Reviews"  value={metrics.pendingAttendance} icon="🕐" />
+        <StatCard title="Accidents"        value={metrics.accidentCount}     icon="🚨" />
       </div>
 
       {/* Two-column layout below */}
@@ -166,7 +166,7 @@ export function AdminDashboard() {
                     <div>
                       <p style={{ margin: 0, fontWeight: 700, fontSize: "15px" }}>{event.name}</p>
                       {event.location && (
-                        <p style={{ margin: "2px 0 0", fontSize: "12px", color: "#9ca3af" }}> {event.location}</p>
+                        <p style={{ margin: "2px 0 0", fontSize: "12px", color: "#9ca3af" }}>📍 {event.location}</p>
                       )}
                     </div>
                     <Badge label={event.status} />
@@ -174,10 +174,10 @@ export function AdminDashboard() {
 
                   {/* Live metrics row */}
                   <div style={{ display: "flex", gap: 16, fontSize: "12px", color: "#6b7280", marginBottom: 12 }}>
-                    <span>people {event.attendance_count ?? 0}</span>
-                    <span> {event.approved_attendance_count ?? 0} approved</span>
+                    <span>👥 {event.attendance_count ?? 0}</span>
+                    <span>✅ {event.approved_attendance_count ?? 0} approved</span>
                     <span style={{ color: event.attendance_open ? "#15803d" : "#9ca3af" }}>
-                      {event.attendance_open ? " Attendance open" : " Closed"}
+                      {event.attendance_open ? "🟢 Attendance open" : "⚫ Closed"}
                     </span>
                   </div>
 
@@ -190,21 +190,21 @@ export function AdminDashboard() {
                       disabled={event.status !== "preparation" || !!isStarting}
                       onClick={() => setConfirm({ eventId: event.id, action: "start", name: event.name })}
                     >
-                      {isStarting ? "Starting…" : " Start"}
+                      {isStarting ? "Starting…" : "▶ Start"}
                     </Button>
                     <Button
                       variant="danger"
                       disabled={event.status !== "active" || !!isEnding}
                       onClick={() => setConfirm({ eventId: event.id, action: "end", name: event.name })}
                     >
-                      {isEnding ? "Ending…" : " End"}
+                      {isEnding ? "Ending…" : "■ End"}
                     </Button>
                     <Button
                       variant={event.attendance_open ? "ghost" : "outline"}
                       disabled={event.status !== "active" || !!isToggling}
                       onClick={() => handleToggle(event.id, event.attendance_open)}
                     >
-                      {isToggling ? "…" : event.attendance_open ? " Close Att." : " Open Att."}
+                      {isToggling ? "…" : event.attendance_open ? "🔒 Close Att." : "🔓 Open Att."}
                     </Button>
                   </div>
                 </Card>
@@ -244,16 +244,16 @@ export function AdminDashboard() {
           {/* Quick links */}
           <div style={{ marginTop: 16, display: "flex", flexDirection: "column", gap: 8 }}>
             <Button variant="ghost" onClick={() => navigate("/attendance-review")} style={{ textAlign: "left" }}>
-               Review Attendance
+              🔍 Review Attendance
             </Button>
             <Button variant="ghost" onClick={() => navigate("/analytics")} style={{ textAlign: "left" }}>
-               Analytics
+              📈 Analytics
             </Button>
             <Button variant="ghost" onClick={() => navigate("/accidents")} style={{ textAlign: "left" }}>
-              Accident Reports
+              🚨 Accident Reports
             </Button>
             <Button variant="ghost" onClick={() => navigate("/reports")} style={{ textAlign: "left" }}>
-               Committee Reports
+              📝 Committee Reports
             </Button>
           </div>
         </div>
@@ -263,7 +263,7 @@ export function AdminDashboard() {
       <Modal
         open={!!confirm}
         onClose={() => setConfirm(null)}
-        title={confirm?.action === "end" ? " End Event?" : "Start Event?"}
+        title={confirm?.action === "end" ? "⚠️ End Event?" : "▶ Start Event?"}
       >
         <p style={{ margin: "0 0 20px", fontSize: "14px", color: "#4b5563" }}>
           {confirm?.action === "end"

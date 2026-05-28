@@ -42,7 +42,6 @@ export function Login() {
     setError("");
     try {
       await login(formData.username, formData.password);
-      // Removed: console.log("TOKEN:", ...) — leaked auth token to browser console
       navigate("/");
     } catch (err) {
       setError("Invalid username or password");
@@ -84,7 +83,7 @@ export function Login() {
           }}
         >
           Don't have an account? Register
-      </button>
+        </button>
       </form>
     </div>
   );

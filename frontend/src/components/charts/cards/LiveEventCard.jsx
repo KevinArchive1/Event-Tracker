@@ -1,4 +1,3 @@
-// Fixed: added export keyword — this component was not importable before
 export function LiveEventCard({ event }) {
   return (
     <div

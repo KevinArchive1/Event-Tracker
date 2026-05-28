@@ -5,7 +5,9 @@ import { Card, Badge, Button, Input, Alert, Modal } from "../../components/ui/UI
 
 export function Settings() {
   const { user } = useAuth();
-  const isSuperuser = user?.is_superuser;
+  // is_superuser may not be included in the serializer response;
+  // fall back to checking the role as well so admins can always see this.
+  const isSuperuser = user?.is_superuser || user?.role === "admin";
 
   const [adminOpen, setAdminOpen] = useState(false);
   const [adminForm, setAdminForm] = useState({ username: "", password: "", email: "", first_name: "", last_name: "" });
