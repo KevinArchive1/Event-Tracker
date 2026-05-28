@@ -522,3 +522,104 @@ class CreateAdminUserView(APIView):
         )
         token, _ = Token.objects.get_or_create(user=admin_user)
         return Response({"token": token.key, "user": UserSerializer(admin_user).data}, status=status.HTTP_201_CREATED)
+
+
+class MySelectionsView(APIView):
+    """
+    GET /api/events/my-selections/
+    Returns the list of EventSelection objects for the currently logged-in student.
+    Used by the frontend to persist the "picked" state across page refreshes.
+    """
+    permission_classes = [IsStudentRole]
+ 
+    def get(self, request):
+        selections = EventSelection.objects.filter(student=request.user).values_list(
+            "event_id", flat=True
+        )
+        return Response(list(selections))
+    
+# ─────────────────────────────────────────────────────────────────────────────
+# ADD ALL THREE CLASSES to views.py (paste at the bottom of the file)
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+class MySelectionsView(APIView):
+    """
+    GET /api/events/my-selections/
+    Returns list of event_ids the current student has picked.
+    """
+    permission_classes = [IsStudentRole]
+
+    def get(self, request):
+        selections = EventSelection.objects.filter(
+            student=request.user
+        ).values_list("event_id", flat=True)
+        return Response(list(selections))
+
+
+class MyAttendanceView(APIView):
+    """
+    GET /api/attendance/my/
+    Returns all Attendance records for the logged-in user across all events.
+    Students use this to see their own submission status without needing
+    admin/committee permissions.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        attendances = (
+            Attendance.objects.filter(student=request.user)
+            .select_related("event", "reviewed_by")
+            .order_by("-submitted_at")
+        )
+        data = []
+        for a in attendances:
+            data.append({
+                "id": a.id,
+                "event": a.event.id,
+                "event_name": a.event.name,
+                "event_status": a.event.status,
+                "image_proof": (
+                    request.build_absolute_uri(a.image_proof.url)
+                    if a.image_proof else None
+                ),
+                "status": a.status,
+                "review_note": a.review_note,
+                "submitted_at": a.submitted_at,
+                "reviewed_at": a.reviewed_at,
+                "reviewed_by": a.reviewed_by.username if a.reviewed_by else None,
+            })
+        return Response(data)
+
+
+class MyCommitteesView(APIView):
+    """
+    GET /api/events/my-committees/
+    Returns all events where the current user is an active committee member.
+    Used by Reports page event dropdown and the Staff Dashboard.
+    """
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get(self, request):
+        memberships = (
+            CommitteeMembership.objects.filter(user=request.user, is_active=True)
+            .select_related("event")
+            .order_by("-joined_at")
+        )
+        data = []
+        for m in memberships:
+            ev = m.event
+            data.append({
+                "membership_id": m.id,
+                "joined_at": m.joined_at,
+                "event": {
+                    "id": ev.id,
+                    "name": ev.name,
+                    "status": ev.status,
+                    "location": ev.location,
+                    "attendance_open": ev.attendance_open,
+                    "start_time": ev.start_time,
+                    "end_time": ev.end_time,
+                },
+            })
+        return Response(data)

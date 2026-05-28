@@ -1,75 +1,90 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { request } from "../api/client";
+import { createContext, useContext, useEffect, useState } from "react";
+import API from "../api/axios";
 
-const AuthContext = createContext(null);
+const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
-  const [token, setToken] = useState(localStorage.getItem("token") || "");
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const loadMe = async (activeToken = token) => {
-    if (!activeToken) {
-      setUser(null);
-      return;
-    }
-    const me = await request("/auth/me/", { token: activeToken });
-    setUser(me);
+  // ✅ REGISTER
+  const register = async (data) => {
+    const res = await API.post("/auth/register/", data);
+
+    const { token, user } = res.data;
+
+    localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(user));
+
+    setUser(user);
+
+    return res.data;
   };
 
-  useEffect(() => {
-    if (!token) {
-      setUser(null);
-      return;
-    }
-    loadMe(token).catch(() => {
-      setToken("");
-      localStorage.removeItem("token");
+  // ✅ LOGIN
+  const login = async (username, password) => {
+    const response = await API.post("/auth/login/", {
+      username,
+      password,
     });
-  }, [token]);
 
-  const login = async (payload) => {
-    setLoading(true);
-    try {
-      const data = await request("/auth/login/", { method: "POST", body: payload });
-      setToken(data.token);
-      localStorage.setItem("token", data.token);
-      setUser(data.user);
-    } finally {
-      setLoading(false);
-    }
+    const { token, user } = response.data;
+
+    localStorage.setItem("token", token);
+    localStorage.setItem("user", JSON.stringify(user));
+
+    setUser(user);
+
+    return user;
   };
 
-  const register = async (payload) => {
-    setLoading(true);
-    try {
-      const data = await request("/auth/register/", { method: "POST", body: payload });
-      setToken(data.token);
-      localStorage.setItem("token", data.token);
-      setUser(data.user);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // ✅ LOGOUT
   const logout = () => {
     localStorage.removeItem("token");
-    setToken("");
+    localStorage.removeItem("user");
     setUser(null);
   };
 
-  const value = useMemo(
-    () => ({ token, user, loading, login, register, logout, refreshMe: loadMe }),
-    [token, user, loading]
-  );
+  // ✅ LOAD USER ON REFRESH
+    const fetchCurrentUser = async () => {
+    const token = localStorage.getItem("token");
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+    if (!token) {
+        setLoading(false);
+        return;
+    }
+
+    try {
+        const res = await API.get("/auth/me/");
+        setUser(res.data); // 👈 MUST SET USER HERE
+    } catch (err) {
+        localStorage.removeItem("token");
+        setUser(null);
+    } finally {
+        setLoading(false);
+    }
+    };
+
+  useEffect(() => {
+    fetchCurrentUser();
+  }, []);
+
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        login,
+        register,
+        logout,
+        isAuthenticated: !!user,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
 export function useAuth() {
-  const ctx = useContext(AuthContext);
-  if (!ctx) {
-    throw new Error("useAuth must be used inside AuthProvider.");
-  }
-  return ctx;
+  return useContext(AuthContext);
 }
