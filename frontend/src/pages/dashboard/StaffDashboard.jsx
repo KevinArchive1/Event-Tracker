@@ -6,15 +6,15 @@ import { getAttendanceForReview, reviewAttendance } from "../../api/attendance";
 import { createCommitteeReport } from "../../api/reports";
 import { getBroadcasts } from "../../api/broadcasts";
 import { Card, StatCard, Badge, Button, Modal, Select, Alert, Spinner, EmptyState, Input } from "../../components/ui/UI";
+import styles from "./Staffdashboard.module.css";
 
 export function StaffDashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const [committees, setCommittees] = useState([]); // from /events/my-committees/
+  const [committees, setCommittees] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Attendance review per event
   const [selectedEventId, setSelectedEventId] = useState(null);
   const [attendance, setAttendance] = useState([]);
   const [attendanceLoading, setAttendanceLoading] = useState(false);
@@ -23,14 +23,12 @@ export function StaffDashboard() {
   const [reviewLoading, setReviewLoading] = useState(null);
   const [lightbox, setLightbox] = useState(null);
 
-  // Quick report modal
   const [reportOpen, setReportOpen] = useState(false);
   const [reportForm, setReportForm] = useState({ event: "", title: "", content: "", report_type: "update" });
   const [reportError, setReportError] = useState("");
   const [reportLoading, setReportLoading] = useState(false);
   const [reportSuccess, setReportSuccess] = useState("");
 
-  // Broadcasts
   const [broadcasts, setBroadcasts] = useState([]);
 
   useEffect(() => {
@@ -41,9 +39,8 @@ export function StaffDashboard() {
           getBroadcasts(),
         ]);
         setCommittees(committeesRes.data);
-        setBroadcasts(broadcastsRes.slice(0, 5)); // latest 5
+        setBroadcasts(broadcastsRes.slice(0, 5));
 
-        // Auto-select first active event
         const first = committeesRes.data.find((m) => m.event.status === "active");
         if (first) setSelectedEventId(first.event.id);
       } catch (err) {
@@ -55,7 +52,6 @@ export function StaffDashboard() {
     load();
   }, []);
 
-  // Fetch attendance when selected event changes
   useEffect(() => {
     if (!selectedEventId) return;
     setAttendanceLoading(true);
@@ -101,9 +97,7 @@ export function StaffDashboard() {
 
   if (loading) return <Spinner />;
 
-  const activeCommittees  = committees.filter((m) => m.event.status === "active");
-  const allEventIds       = committees.map((m) => m.event.id);
-  const selectedCommittee = committees.find((m) => m.event.id === selectedEventId);
+  const activeCommittees = committees.filter((m) => m.event.status === "active");
 
   const attCounts = {
     pending:  attendance.filter((a) => a.status === "pending").length,
@@ -114,13 +108,13 @@ export function StaffDashboard() {
   const filtered = attendance.filter((a) => a.status === attendanceFilter);
 
   return (
-    <div>
+    <div className={styles.page}>
       {/* Header */}
-      <div style={{ marginBottom: 28 }}>
-        <h1 style={{ margin: 0, fontSize: "22px", fontWeight: 700 }}>
+      <div className={styles.greeting}>
+        <h1 className={styles.greetingName}>
           🤝 Welcome, {user?.first_name || user?.username}
         </h1>
-        <p style={{ margin: 0, color: "#9ca3af", fontSize: "13px" }}>
+        <p className={styles.greetingRole}>
           Committee Member · {committees.length} event{committees.length !== 1 ? "s" : ""} assigned
         </p>
       </div>
@@ -137,7 +131,7 @@ export function StaffDashboard() {
       {committees.length > 0 && (
         <>
           {/* Stat row */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 32 }}>
+          <div className={styles.statGrid}>
             <StatCard title="My Events"       value={committees.length}        icon="📅" accent />
             <StatCard title="Active Now"      value={activeCommittees.length}  icon="🟢" />
             <StatCard title="Pending Review"  value={attCounts.pending}        icon="🕐" />
@@ -145,17 +139,17 @@ export function StaffDashboard() {
           </div>
 
           {/* Main layout */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: 24, alignItems: "start" }}>
+          <div className={styles.mainLayout}>
 
             {/* ── Left: Attendance review ── */}
             <div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
-                <h2 style={{ margin: 0, fontSize: "16px", fontWeight: 700 }}>🔍 Attendance Review</h2>
+              <div className={styles.panelHeader}>
+                <h2 className={styles.panelTitle}>🔍 Attendance Review</h2>
                 <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
                   <select
                     value={selectedEventId || ""}
                     onChange={(e) => setSelectedEventId(Number(e.target.value))}
-                    style={{ padding: "6px 10px", borderRadius: "8px", border: "1px solid #e5e7eb", fontSize: "13px" }}
+                    style={{ padding: "6px 10px", borderRadius: "8px", border: "1px solid var(--border-2)", fontSize: "13px", background: "var(--bg-2)", color: "var(--text-primary)" }}
                   >
                     {committees.map((m) => (
                       <option key={m.event.id} value={m.event.id}>
@@ -170,25 +164,15 @@ export function StaffDashboard() {
               </div>
 
               {/* Filter tabs */}
-              <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+              <div className={styles.tabBar}>
                 {["pending", "approved", "rejected"].map((t) => (
                   <button
                     key={t}
                     onClick={() => setAttendanceFilter(t)}
-                    style={{
-                      padding: "6px 12px", borderRadius: "8px", border: "none",
-                      cursor: "pointer", fontSize: "12px",
-                      fontWeight: attendanceFilter === t ? 700 : 400,
-                      background: attendanceFilter === t ? "#6366f1" : "#f3f4f6",
-                      color: attendanceFilter === t ? "#fff" : "#374151",
-                    }}
+                    className={`${styles.tab} ${attendanceFilter === t ? styles.tabActive : ""}`}
                   >
                     {t.charAt(0).toUpperCase() + t.slice(1)}
-                    <span style={{
-                      marginLeft: 5,
-                      background: attendanceFilter === t ? "rgba(255,255,255,0.25)" : "#e5e7eb",
-                      borderRadius: "99px", padding: "1px 6px", fontSize: "10px",
-                    }}>
+                    <span className={attendanceFilter === t ? styles.tabCount : styles.tabCountInactive}>
                       {attCounts[t]}
                     </span>
                   </button>
@@ -206,17 +190,17 @@ export function StaffDashboard() {
               )}
 
               {/* Attendance cards */}
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 12 }}>
+              <div className={styles.attendanceGrid}>
                 {filtered.map((item) => (
                   <Card key={item.id} style={{ padding: "14px" }}>
                     <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
                       <div>
-                        <p style={{ margin: 0, fontWeight: 700, fontSize: "13px" }}>
+                        <p className={styles.attStudentName}>
                           {item.student?.first_name
                             ? `${item.student.first_name} ${item.student.last_name}`
                             : item.student?.username}
                         </p>
-                        <p style={{ margin: 0, fontSize: "11px", color: "#9ca3af" }}>
+                        <p className={styles.attStudentUser}>
                           @{item.student?.username}
                         </p>
                       </div>
@@ -230,7 +214,7 @@ export function StaffDashboard() {
                       style={{
                         width: "100%", height: 130, objectFit: "cover",
                         borderRadius: "6px", cursor: "pointer", marginBottom: 8,
-                        border: "1px solid #f1f5f9",
+                        border: "1px solid var(--border)",
                       }}
                     />
 
@@ -258,24 +242,22 @@ export function StaffDashboard() {
             </div>
 
             {/* ── Right: My events + broadcasts ── */}
-            <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+            <div className={styles.rightPanel}>
 
               {/* My assigned events */}
               <div>
-                <h2 style={{ margin: "0 0 12px", fontSize: "16px", fontWeight: 700 }}>📅 My Events</h2>
+                <h2 className={styles.rightTitle}>📅 My Events</h2>
                 <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                   {committees.map((m) => (
                     <Card key={m.event.id} style={{ padding: "12px 14px" }}>
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
-                        <p style={{ margin: 0, fontWeight: 700, fontSize: "13px" }}>{m.event.name}</p>
+                        <p className={styles.eventCardName}>{m.event.name}</p>
                         <Badge label={m.event.status} />
                       </div>
                       {m.event.location && (
-                        <p style={{ margin: "0 0 6px", fontSize: "11px", color: "#9ca3af" }}>
-                          📍 {m.event.location}
-                        </p>
+                        <p className={styles.eventCardLocation}>📍 {m.event.location}</p>
                       )}
-                      <p style={{ margin: "0 0 8px", fontSize: "11px", color: m.event.attendance_open ? "#15803d" : "#9ca3af" }}>
+                      <p style={{ margin: "0 0 8px", fontSize: "11px", color: m.event.attendance_open ? "var(--green)" : "var(--text-muted)" }}>
                         {m.event.attendance_open ? "🟢 Attendance open" : "⚫ Attendance closed"}
                       </p>
                       <div style={{ display: "flex", gap: 6 }}>
@@ -305,20 +287,20 @@ export function StaffDashboard() {
               {/* Broadcasts */}
               <div>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
-                  <h2 style={{ margin: 0, fontSize: "16px", fontWeight: 700 }}>📣 Broadcasts</h2>
+                  <h2 className={styles.rightTitle} style={{ margin: 0 }}>📣 Broadcasts</h2>
                   <Button variant="ghost" onClick={() => navigate("/broadcasts")} style={{ fontSize: "11px", padding: "4px 8px" }}>
                     All
                   </Button>
                 </div>
                 {broadcasts.length === 0 && (
-                  <p style={{ fontSize: "13px", color: "#9ca3af" }}>No broadcasts yet.</p>
+                  <p style={{ fontSize: "13px", color: "var(--text-muted)" }}>No broadcasts yet.</p>
                 )}
                 <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                   {broadcasts.map((b) => (
                     <Card key={b.id} style={{ padding: "10px 14px" }}>
-                      <p style={{ margin: "0 0 2px", fontWeight: 700, fontSize: "13px" }}>{b.title}</p>
-                      <p style={{ margin: "0 0 4px", fontSize: "12px", color: "#4b5563" }}>{b.message}</p>
-                      <p style={{ margin: 0, fontSize: "10px", color: "#9ca3af" }}>
+                      <p className={styles.broadcastTitle}>{b.title}</p>
+                      <p className={styles.broadcastBody}>{b.message}</p>
+                      <p className={styles.broadcastMeta}>
                         {b.admin?.username} · {new Date(b.created_at).toLocaleDateString()}
                       </p>
                     </Card>
@@ -336,7 +318,7 @@ export function StaffDashboard() {
         onClose={() => setConfirmReview(null)}
         title={`Confirm ${confirmReview?.status === "approved" ? "Approval" : "Rejection"}`}
       >
-        <p style={{ margin: "0 0 20px", fontSize: "14px", color: "#4b5563" }}>
+        <p className={styles.confirmText}>
           Mark this submission as <strong>{confirmReview?.status}</strong>?
         </p>
         <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>
@@ -382,13 +364,12 @@ export function StaffDashboard() {
             placeholder="Report title"
           />
           <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            <label style={{ fontSize: "12px", fontWeight: 600, color: "#374151" }}>Content</label>
+            <label style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-muted)" }}>Content</label>
             <textarea
               value={reportForm.content}
               onChange={(e) => setReportForm({ ...reportForm, content: e.target.value })}
               rows={4}
               placeholder="Describe the update, request, or issue…"
-              style={{ padding: "9px 12px", borderRadius: "8px", border: "1px solid #e5e7eb", fontSize: "14px", resize: "vertical" }}
             />
           </div>
           <Button onClick={handleReport} disabled={reportLoading}>
@@ -399,18 +380,9 @@ export function StaffDashboard() {
 
       {/* Lightbox */}
       {lightbox && (
-        <div
-          onClick={() => setLightbox(null)}
-          style={{
-            position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)",
-            zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center",
-          }}
-        >
-          <img src={lightbox} alt="proof"
-            style={{ maxWidth: "88%", maxHeight: "88%", borderRadius: "10px" }} />
-          <p style={{ position: "absolute", bottom: 24, color: "#fff", fontSize: "13px" }}>
-            Click anywhere to close
-          </p>
+        <div className={styles.lightbox} onClick={() => setLightbox(null)}>
+          <img src={lightbox} alt="proof" className={styles.lightboxImg} />
+          <p className={styles.lightboxHint}>Click anywhere to close</p>
         </div>
       )}
     </div>

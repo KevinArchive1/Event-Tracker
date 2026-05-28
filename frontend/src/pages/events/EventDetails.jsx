@@ -5,6 +5,7 @@ import API from "../../api/axios";
 import { startEvent, endEvent, pickEvent } from "../../api/events";
 import { submitRating, toggleAttendance } from "../../api/misc";
 import { Badge, Button, Card, Alert, Spinner, Modal, Input } from "../../components/ui/UI";
+import styles from "./EventDetails.module.css";
 
 export function EventDetails() {
   const { id } = useParams();
@@ -18,18 +19,15 @@ export function EventDetails() {
   const [error, setError] = useState("");
   const [actionMsg, setActionMsg] = useState(null);
 
-  // Track if this student already picked this event
   const [alreadyPicked, setAlreadyPicked] = useState(false);
   const [pickLoading, setPickLoading] = useState(false);
 
-  // Rating modal
   const [ratingOpen, setRatingOpen] = useState(false);
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
   const [ratingLoading, setRatingLoading] = useState(false);
   const [ratingMsg, setRatingMsg] = useState(null);
 
-  // Join committee modal
   const [joinOpen, setJoinOpen] = useState(false);
   const [code, setCode] = useState("");
   const [joinLoading, setJoinLoading] = useState(false);
@@ -53,14 +51,13 @@ export function EventDetails() {
     }
   };
 
-  // Check if student already picked — prevents duplicate pick errors
   const fetchPickedState = async () => {
     if (!isStudent) return;
     try {
       const res = await API.get("/events/my-selections/");
       setAlreadyPicked(res.data.includes(parseInt(id)));
     } catch {
-      // Non-critical — leave button enabled if check fails
+      // Non-critical
     }
   };
 
@@ -68,8 +65,6 @@ export function EventDetails() {
     fetchEvent();
     fetchPickedState();
   }, [id]);
-
-  // ── Admin actions ─────────────────────────────────────────────────────────
 
   const handleStart = async () => {
     try {
@@ -100,8 +95,6 @@ export function EventDetails() {
       showMsg("error", err.response?.data?.detail || "Failed to toggle attendance.");
     }
   };
-
-  // ── Student actions ───────────────────────────────────────────────────────
 
   const handlePick = async () => {
     setPickLoading(true);
@@ -145,12 +138,10 @@ export function EventDetails() {
     }
   };
 
-  // ── Render ────────────────────────────────────────────────────────────────
-
   if (loading) return <Spinner />;
   if (error) return (
     <div>
-      <p style={{ color: "#dc2626" }}>{error}</p>
+      <p style={{ color: "var(--red)" }}>{error}</p>
       <Button variant="ghost" onClick={() => navigate("/events")}>← Back</Button>
     </div>
   );
@@ -158,34 +149,34 @@ export function EventDetails() {
   const fmt = (dt) => dt ? new Date(dt).toLocaleString() : "—";
 
   return (
-    <div style={{ maxWidth: 720 }}>
+    <div className={styles.page}>
       <button
         onClick={() => navigate("/events")}
-        style={{ background: "none", border: "none", cursor: "pointer", color: "#6b7280", fontSize: "13px", marginBottom: 16, padding: 0 }}
+        style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", fontSize: "13px", marginBottom: 16, padding: 0 }}
       >
         ← Back to Events
       </button>
 
       <Card style={{ marginBottom: 16 }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 12 }}>
-          <h1 style={{ margin: 0, fontSize: "22px", fontWeight: 700 }}>{event.name}</h1>
+          <h1 className={styles.eventTitle}>{event.name}</h1>
           <Badge label={event.status} />
         </div>
         {event.description && (
-          <p style={{ margin: "0 0 12px", fontSize: "14px", color: "#4b5563", lineHeight: 1.6 }}>{event.description}</p>
+          <p className={styles.eventDesc}>{event.description}</p>
         )}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px 24px", fontSize: "13px", color: "#6b7280", marginBottom: 12 }}>
-          <span>📍 {event.location || "No location set"}</span>
-          <span>🕐 Start: {fmt(event.start_time)}</span>
-          <span>🏁 End: {fmt(event.end_time)}</span>
-          <span style={{ color: event.attendance_open ? "#15803d" : "#9ca3af" }}>
+        <div className={styles.detailGrid}>
+          <span className={styles.detailItem}>📍 {event.location || "No location set"}</span>
+          <span className={styles.detailItem}>🕐 Start: {fmt(event.start_time)}</span>
+          <span className={styles.detailItem}>🏁 End: {fmt(event.end_time)}</span>
+          <span className={event.attendance_open ? styles.detailItemGreen : styles.detailItem}>
             {event.attendance_open ? "🟢 Attendance open" : "⚫ Attendance closed"}
           </span>
         </div>
-        <div style={{ display: "flex", gap: 16, fontSize: "13px", color: "#6b7280" }}>
-          <span>👥 {event.attendance_count ?? 0} submissions</span>
-          <span>✅ {event.approved_attendance_count ?? 0} approved</span>
-          <span>🤝 {event.committee_count ?? 0} committee</span>
+        <div className={styles.metaRow}>
+          <span>👥 <span className={styles.metaNum}>{event.attendance_count ?? 0}</span> submissions</span>
+          <span>✅ <span className={styles.metaNum}>{event.approved_attendance_count ?? 0}</span> approved</span>
+          <span>🤝 <span className={styles.metaNum}>{event.committee_count ?? 0}</span> committee</span>
         </div>
       </Card>
 
@@ -195,7 +186,7 @@ export function EventDetails() {
       {/* Admin controls */}
       {isAdmin && (
         <Card style={{ marginBottom: 16 }}>
-          <h3 style={{ margin: "0 0 12px", fontSize: "14px", fontWeight: 700 }}>Admin Controls</h3>
+          <h3 className={styles.sectionTitle}>Admin Controls</h3>
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
             <Button variant="success" disabled={event.status !== "preparation"} onClick={handleStart}>
               ▶ Start Event
@@ -223,7 +214,7 @@ export function EventDetails() {
       {/* Student actions */}
       {isStudent && (
         <Card style={{ marginBottom: 16 }}>
-          <h3 style={{ margin: "0 0 12px", fontSize: "14px", fontWeight: 700 }}>Your Actions</h3>
+          <h3 className={styles.sectionTitle}>Your Actions</h3>
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
             {event.status === "active" && (
               <Button
@@ -234,7 +225,6 @@ export function EventDetails() {
                 {pickLoading ? "Picking…" : alreadyPicked ? "✓ Already Picked" : "🎯 Pick This Event"}
               </Button>
             )}
-            {/* Only show attendance button if attendance is actually open */}
             {event.status === "active" && event.attendance_open && (
               <Button variant="outline" onClick={() => navigate("/attendance")}>
                 📸 Submit Attendance
@@ -257,33 +247,32 @@ export function EventDetails() {
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           {ratingMsg && <Alert type={ratingMsg.type} message={ratingMsg.text} />}
           <div>
-            <label style={{ fontSize: "12px", fontWeight: 600, color: "#374151", display: "block", marginBottom: 8 }}>
+            <label style={{ fontSize: "10px", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--text-muted)", fontFamily: "var(--font-display)", display: "block", marginBottom: 8 }}>
               Rating
             </label>
-            <div style={{ display: "flex", gap: 8 }}>
+            <div className={styles.ratingRow}>
               {[1, 2, 3, 4, 5].map((n) => (
                 <button
                   key={n}
                   onClick={() => setRating(n)}
+                  className={styles.ratingBtn}
                   style={{
-                    width: 40, height: 40, borderRadius: "8px", border: "2px solid",
-                    borderColor: rating >= n ? "#f59e0b" : "#e5e7eb",
-                    background: rating >= n ? "#fef9c3" : "#fff",
-                    fontSize: "18px", cursor: "pointer",
+                    borderColor: rating >= n ? "#f59e0b" : "var(--border-2)",
+                    background: rating >= n ? "rgba(245,158,11,0.12)" : "var(--surface)",
+                    color: "inherit",
                   }}
                 >⭐</button>
               ))}
             </div>
-            <p style={{ margin: "6px 0 0", fontSize: "12px", color: "#9ca3af" }}>{rating} / 5</p>
+            <p className={styles.ratingHint}>{rating} / 5</p>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-            <label style={{ fontSize: "12px", fontWeight: 600, color: "#374151" }}>Comment (optional)</label>
+            <label style={{ fontSize: "10px", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--text-muted)", fontFamily: "var(--font-display)" }}>Comment (optional)</label>
             <textarea
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               rows={3}
               placeholder="Share your experience…"
-              style={{ padding: "9px 12px", borderRadius: "8px", border: "1px solid #e5e7eb", fontSize: "14px", resize: "vertical" }}
             />
           </div>
           <Button onClick={handleRating} disabled={ratingLoading}>
@@ -294,9 +283,9 @@ export function EventDetails() {
 
       {/* Join Committee Modal */}
       <Modal open={joinOpen} onClose={() => setJoinOpen(false)} title="Join Committee">
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <div className={styles.codeModalCol}>
           {joinMsg && <Alert type={joinMsg.type} message={joinMsg.text} />}
-          <p style={{ margin: 0, fontSize: "13px", color: "#6b7280" }}>
+          <p className={styles.joinHint}>
             Enter the committee code provided by your admin.
           </p>
           <Input

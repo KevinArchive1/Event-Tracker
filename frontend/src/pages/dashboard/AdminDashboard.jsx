@@ -4,6 +4,7 @@ import API from "../../api/axios";
 import { startEvent, endEvent } from "../../api/events";
 import { toggleAttendance } from "../../api/misc";
 import { Badge, Button, Card, StatCard, Modal, Spinner } from "../../components/ui/UI";
+import styles from "./AdminDashboard.module.css";
 
 export function AdminDashboard() {
   const navigate = useNavigate();
@@ -34,7 +35,6 @@ export function AdminDashboard() {
       const newEvents = eventsRes.data;
       const prev = prevEventsRef.current;
 
-      // Diff against previous state to generate real log entries
       newEvents.forEach((ev) => {
         const old = prev[ev.id];
         if (!old) return;
@@ -52,7 +52,6 @@ export function AdminDashboard() {
         }
       });
 
-      // Update ref
       const newRef = {};
       newEvents.forEach((ev) => { newRef[ev.id] = ev; });
       prevEventsRef.current = newRef;
@@ -81,7 +80,6 @@ export function AdminDashboard() {
     accidentCount: liveData.events.reduce((s, e) => s + e.accident_count, 0),
   } : null;
 
-  // ── Confirmed action handler ──────────────────────────────────────────────
   const handleConfirmedAction = async () => {
     if (!confirm) return;
     const { eventId, action } = confirm;
@@ -134,7 +132,7 @@ export function AdminDashboard() {
         </p>
       </div>
 
-      {/* Stat cards — restored emoji icons */}
+      {/* Stat cards */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 32 }}>
         <StatCard title="Active Events"    value={metrics.activeEvents}      icon="🟢" accent />
         <StatCard title="Total Attendance" value={metrics.totalAttendance}   icon="👥" />
@@ -142,7 +140,7 @@ export function AdminDashboard() {
         <StatCard title="Accidents"        value={metrics.accidentCount}     icon="🚨" />
       </div>
 
-      {/* Two-column layout below */}
+      {/* Two-column layout */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: 24, alignItems: "start" }}>
 
         {/* Event control panel */}
@@ -172,7 +170,6 @@ export function AdminDashboard() {
                     <Badge label={event.status} />
                   </div>
 
-                  {/* Live metrics row */}
                   <div style={{ display: "flex", gap: 16, fontSize: "12px", color: "#6b7280", marginBottom: 12 }}>
                     <span>👥 {event.attendance_count ?? 0}</span>
                     <span>✅ {event.approved_attendance_count ?? 0} approved</span>

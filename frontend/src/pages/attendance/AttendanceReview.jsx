@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import API from "../../api/axios";
 import { getAttendanceForReview, reviewAttendance } from "../../api/attendance";
 import { Badge, Button, Card, Select, Spinner, EmptyState, Alert, Modal } from "../../components/ui/UI";
+import styles from "./AttendanceReview.module.css";
 
 export function AttendanceReview() {
   const [events, setEvents] = useState([]);
@@ -20,7 +21,6 @@ export function AttendanceReview() {
   useEffect(() => {
     API.get("/events/")
       .then((r) => {
-        // Review endpoint only works for ended events — filter accordingly
         const ended = r.data.filter((e) => e.status === "ended");
         setEvents(ended);
         setEventsLoaded(true);
@@ -79,22 +79,21 @@ export function AttendanceReview() {
   };
 
   return (
-    <div>
-      <div style={{ marginBottom: 24 }}>
-        <h1 style={{ margin: 0, fontSize: "22px", fontWeight: 700 }}>Attendance Review</h1>
-        <p style={{ margin: 0, color: "#9ca3af", fontSize: "13px" }}>
+    <div className={styles.page}>
+      <div className={styles.header}>
+        <h1 className={styles.title}>Attendance Review</h1>
+        <p className={styles.subtitle}>
           Approve or reject student submissions · Only ended events are reviewable
         </p>
       </div>
 
-      {/* Show a clear message if there are no ended events at all */}
       {eventsLoaded && events.length === 0 && (
         <EmptyState message="No ended events yet. Attendance review is available once an event has ended." />
       )}
 
       {eventsLoaded && events.length > 0 && (
         <>
-          <div style={{ display: "flex", gap: 10, marginBottom: 16, flexWrap: "wrap" }}>
+          <div className={styles.filterRow}>
             <Select value={eventId} onChange={handleEventChange} style={{ minWidth: 240 }}>
               <option value="">Select an ended event…</option>
               {events.map((ev) => (
@@ -105,29 +104,21 @@ export function AttendanceReview() {
               placeholder="Search by username…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              style={{ padding: "9px 12px", borderRadius: "8px", border: "1px solid #e5e7eb", fontSize: "14px", outline: "none", minWidth: 200 }}
+              className={styles.searchInput}
             />
           </div>
 
           {/* Filter tabs */}
-          <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
+          <div className={styles.tabBar}>
             {["pending", "approved", "rejected"].map((t) => (
               <button
                 key={t}
                 onClick={() => setFilter(t)}
-                style={{
-                  padding: "7px 14px", borderRadius: "8px", border: "none", cursor: "pointer",
-                  fontSize: "13px", fontWeight: filter === t ? 700 : 400,
-                  background: filter === t ? "#6366f1" : "#f3f4f6",
-                  color: filter === t ? "#fff" : "#374151",
-                }}
+                className={`${styles.tab} ${filter === t ? styles.tabActive : ""}`}
               >
                 {t.charAt(0).toUpperCase() + t.slice(1)}
                 {eventId && (
-                  <span style={{
-                    marginLeft: 6, background: filter === t ? "rgba(255,255,255,0.25)" : "#e5e7eb",
-                    borderRadius: "99px", padding: "1px 7px", fontSize: "11px",
-                  }}>
+                  <span className={filter === t ? styles.tabCount : styles.tabCountInactive}>
                     {counts[t]}
                   </span>
                 )}
@@ -147,17 +138,17 @@ export function AttendanceReview() {
             <EmptyState message="Select an ended event above to start reviewing." />
           )}
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 16 }}>
+          <div className={styles.cardGrid}>
             {filtered.map((item) => (
               <Card key={item.id}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 10 }}>
                   <div>
-                    <p style={{ margin: 0, fontWeight: 700, fontSize: "14px" }}>
+                    <p className={styles.studentName}>
                       {item.student?.first_name
                         ? `${item.student.first_name} ${item.student.last_name}`
                         : item.student?.username}
                     </p>
-                    <p style={{ margin: 0, fontSize: "11px", color: "#9ca3af" }}>
+                    <p className={styles.studentMeta}>
                       @{item.student?.username} · {item.student?.course || "—"}
                     </p>
                   </div>
@@ -167,9 +158,9 @@ export function AttendanceReview() {
                   src={item.image_proof}
                   alt="proof"
                   onClick={() => setSelectedImage(item.image_proof)}
-                  style={{ width: "100%", height: "160px", objectFit: "cover", borderRadius: "8px", cursor: "pointer", marginBottom: 10, border: "1px solid #f1f5f9" }}
+                  className={styles.proofImg}
                 />
-                <p style={{ margin: "0 0 10px", fontSize: "11px", color: "#9ca3af" }}>
+                <p className={styles.submittedAt}>
                   Submitted: {new Date(item.submitted_at).toLocaleString()}
                 </p>
                 <div style={{ display: "flex", gap: 8 }}>
@@ -187,7 +178,7 @@ export function AttendanceReview() {
                   >✕ Reject</Button>
                 </div>
                 {item.review_note && (
-                  <p style={{ margin: "8px 0 0", fontSize: "11px", color: "#6b7280" }}>Note: {item.review_note}</p>
+                  <p className={styles.reviewNote}>Note: {item.review_note}</p>
                 )}
               </Card>
             ))}
@@ -197,18 +188,15 @@ export function AttendanceReview() {
 
       {/* Lightbox */}
       {selectedImage && (
-        <div
-          onClick={() => setSelectedImage(null)}
-          style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)", zIndex: 1000, display: "flex", alignItems: "center", justifyContent: "center" }}
-        >
-          <img src={selectedImage} alt="full proof" style={{ maxWidth: "88%", maxHeight: "88%", borderRadius: "10px" }} />
-          <p style={{ position: "absolute", bottom: 24, color: "#fff", fontSize: "13px" }}>Click anywhere to close</p>
+        <div className={styles.lightbox} onClick={() => setSelectedImage(null)}>
+          <img src={selectedImage} alt="full proof" className={styles.lightboxImg} />
+          <p className={styles.lightboxHint}>Click anywhere to close</p>
         </div>
       )}
 
       {/* Confirm modal */}
       <Modal open={!!confirm} onClose={() => setConfirm(null)} title={`Confirm ${confirm?.status === "approved" ? "Approval" : "Rejection"}`}>
-        <p style={{ margin: "0 0 20px", fontSize: "14px", color: "#4b5563" }}>
+        <p className={styles.confirmText}>
           Are you sure you want to mark this as <strong>{confirm?.status}</strong>?
         </p>
         <div style={{ display: "flex", gap: 10, justifyContent: "flex-end" }}>

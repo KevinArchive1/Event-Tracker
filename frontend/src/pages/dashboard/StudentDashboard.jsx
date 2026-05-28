@@ -4,6 +4,7 @@ import { useAuth } from "../../context/AuthContext";
 import API from "../../api/axios";
 import { pickEvent } from "../../api/events";
 import { Card, StatCard, Badge, Button, Spinner, EmptyState, Alert } from "../../components/ui/UI";
+import styles from "./StudentDashboard.module.css";
 
 export function StudentDashboard() {
   const { user } = useAuth();
@@ -69,19 +70,19 @@ export function StudentDashboard() {
   };
 
   return (
-    <div>
+    <div className={styles.page}>
       {/* Greeting */}
-      <div style={{ marginBottom: 28 }}>
-        <h1 style={{ margin: 0, fontSize: "22px", fontWeight: 700 }}>
+      <div className={styles.greeting}>
+        <h1 className={styles.greetingName}>
           👋 Welcome back, {user?.first_name || user?.username}
         </h1>
-        <p style={{ margin: 0, color: "#9ca3af", fontSize: "13px" }}>
+        <p className={styles.greetingRole}>
           {user?.course && `${user.course} · `}{user?.year && `${user.year} · `}Student
         </p>
       </div>
 
       {/* Stat row */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 32 }}>
+      <div className={styles.statGrid}>
         <StatCard title="Events Picked"    value={stats.picked}   icon="🎯" accent />
         <StatCard title="Approved"         value={stats.approved} icon="✅" />
         <StatCard title="Pending Review"   value={stats.pending}  icon="🕐" />
@@ -89,13 +90,11 @@ export function StudentDashboard() {
       </div>
 
       {/* Two-column layout */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24, alignItems: "start" }}>
+      <div className={styles.twoCol}>
 
         {/* ── Active events to pick ── */}
         <div>
-          <h2 style={{ margin: "0 0 14px", fontSize: "16px", fontWeight: 700 }}>
-            🟢 Active Events
-          </h2>
+          <h2 className={styles.sectionTitle}>🟢 Active Events</h2>
           {activeEvents.length === 0 && (
             <EmptyState message="No active events right now." />
           )}
@@ -108,14 +107,14 @@ export function StudentDashboard() {
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 6 }}>
                     <p
                       onClick={() => navigate(`/events/${ev.id}`)}
-                      style={{ margin: 0, fontWeight: 700, fontSize: "14px", cursor: "pointer", color: "#1f2937" }}
+                      className={styles.eventName}
                     >
                       {ev.name}
                     </p>
                     <Badge label={ev.attendance_open ? "open" : "closed"} />
                   </div>
                   {ev.location && (
-                    <p style={{ margin: "0 0 8px", fontSize: "12px", color: "#9ca3af" }}>📍 {ev.location}</p>
+                    <p className={styles.eventLocation}>📍 {ev.location}</p>
                   )}
                   {msg && (
                     <div style={{
@@ -157,8 +156,8 @@ export function StudentDashboard() {
 
         {/* ── My recent submissions ── */}
         <div>
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
-            <h2 style={{ margin: 0, fontSize: "16px", fontWeight: 700 }}>📋 My Submissions</h2>
+          <div className={styles.sectionHeader}>
+            <h2 className={styles.sectionTitle} style={{ margin: 0 }}>📋 My Submissions</h2>
             <Button variant="ghost" onClick={() => navigate("/attendance")} style={{ fontSize: "12px", padding: "5px 10px" }}>
               View all
             </Button>
@@ -175,8 +174,8 @@ export function StudentDashboard() {
                 <Card key={item.id} style={{ padding: "12px 16px" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <div>
-                      <p style={{ margin: 0, fontWeight: 600, fontSize: "13px" }}>{item.event_name}</p>
-                      <p style={{ margin: "2px 0 0", fontSize: "11px", color: "#9ca3af" }}>
+                      <p className={styles.submissionName}>{item.event_name}</p>
+                      <p className={styles.submissionDate}>
                         {new Date(item.submitted_at).toLocaleDateString()}
                       </p>
                     </div>
@@ -191,7 +190,7 @@ export function StudentDashboard() {
                     </div>
                   </div>
                   {item.review_note && (
-                    <p style={{ margin: "6px 0 0", fontSize: "11px", color: "#6b7280" }}>
+                    <p className={styles.reviewNote}>
                       Note: <em>{item.review_note}</em>
                     </p>
                   )}
@@ -204,13 +203,13 @@ export function StudentDashboard() {
 
       {/* ── Ended events — rate them ── */}
       {endedEvents.some((e) => pickedIds.has(e.id)) && (
-        <div style={{ marginTop: 32 }}>
-          <h2 style={{ margin: "0 0 14px", fontSize: "16px", fontWeight: 700 }}>⭐ Rate Past Events</h2>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 12 }}>
+        <div className={styles.rateSection}>
+          <h2 className={styles.sectionTitle}>⭐ Rate Past Events</h2>
+          <div className={styles.rateGrid}>
             {endedEvents.filter((e) => pickedIds.has(e.id)).map((ev) => (
               <Card key={ev.id} style={{ padding: "14px 16px" }}>
-                <p style={{ margin: "0 0 4px", fontWeight: 700, fontSize: "14px" }}>{ev.name}</p>
-                <p style={{ margin: "0 0 10px", fontSize: "11px", color: "#9ca3af" }}>
+                <p className={styles.rateName}>{ev.name}</p>
+                <p className={styles.rateLocation}>
                   {ev.location || "No location"}
                 </p>
                 <Button
