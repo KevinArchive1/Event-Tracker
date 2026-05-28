@@ -1,22 +1,22 @@
 import styles from './UI.module.css';
 
-// ── Badge ──────────────────────────────────────────────────────────────────
+// ── Badge ───────────────────────────────────────────────────────────────────
 export function Badge({ label }) {
-  const key = (label || '').toLowerCase().replace(/\s+/g, '_');
+  const key = (label || '').toLowerCase().replace(/[\s_-]+/g, '_');
   const cls = styles[`badge_${key}`] || styles.badge_default;
   return <span className={`${styles.badge} ${cls}`}>{label}</span>;
 }
 
-// ── Card ───────────────────────────────────────────────────────────────────
-export function Card({ children, style, className = '' }) {
+// ── Card ────────────────────────────────────────────────────────────────────
+export function Card({ children, style, className = '', ...props }) {
   return (
-    <div className={`${styles.card} ${className}`} style={style}>
+    <div className={`${styles.card} ${className}`} style={style} {...props}>
       {children}
     </div>
   );
 }
 
-// ── StatCard ───────────────────────────────────────────────────────────────
+// ── StatCard ────────────────────────────────────────────────────────────────
 export function StatCard({ title, value, accent = false, icon }) {
   return (
     <div className={`${styles.statCard} ${accent ? styles.statCard_accent : ''}`}>
@@ -29,7 +29,7 @@ export function StatCard({ title, value, accent = false, icon }) {
   );
 }
 
-// ── Spinner ────────────────────────────────────────────────────────────────
+// ── Spinner ─────────────────────────────────────────────────────────────────
 export function Spinner({ size = 32 }) {
   return (
     <div className={styles.spinnerWrap}>
@@ -41,7 +41,7 @@ export function Spinner({ size = 32 }) {
   );
 }
 
-// ── EmptyState ─────────────────────────────────────────────────────────────
+// ── EmptyState ──────────────────────────────────────────────────────────────
 export function EmptyState({ message = 'Nothing here yet.' }) {
   return (
     <div className={styles.empty}>
@@ -51,7 +51,7 @@ export function EmptyState({ message = 'Nothing here yet.' }) {
   );
 }
 
-// ── Modal ──────────────────────────────────────────────────────────────────
+// ── Modal ───────────────────────────────────────────────────────────────────
 export function Modal({ open, onClose, title, children }) {
   if (!open) return null;
   return (
@@ -69,7 +69,7 @@ export function Modal({ open, onClose, title, children }) {
   );
 }
 
-// ── Button ─────────────────────────────────────────────────────────────────
+// ── Button ──────────────────────────────────────────────────────────────────
 const VARIANTS = {
   primary: styles.btn_primary,
   success: styles.btn_success,
@@ -92,7 +92,7 @@ export function Button({ children, variant = 'primary', onClick, disabled, style
   );
 }
 
-// ── Input ──────────────────────────────────────────────────────────────────
+// ── Input ───────────────────────────────────────────────────────────────────
 export function Input({ label, style, className = '', ...props }) {
   return (
     <div className={styles.fieldWrap}>
@@ -102,7 +102,7 @@ export function Input({ label, style, className = '', ...props }) {
   );
 }
 
-// ── Select ─────────────────────────────────────────────────────────────────
+// ── Select ──────────────────────────────────────────────────────────────────
 export function Select({ label, children, style, className = '', ...props }) {
   return (
     <div className={styles.fieldWrap}>
@@ -114,9 +114,13 @@ export function Select({ label, children, style, className = '', ...props }) {
   );
 }
 
-// ── Alert ──────────────────────────────────────────────────────────────────
+// ── Alert ───────────────────────────────────────────────────────────────────
 export function Alert({ type = 'error', message }) {
   if (!message) return null;
-  const cls = { error: styles.alert_error, success: styles.alert_success, info: styles.alert_info };
+  const cls = {
+    error:   styles.alert_error,
+    success: styles.alert_success,
+    info:    styles.alert_info,
+  };
   return <div className={`${styles.alert} ${cls[type] || cls.error}`}>{message}</div>;
 }

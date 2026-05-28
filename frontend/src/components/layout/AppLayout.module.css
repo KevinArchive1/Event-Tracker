@@ -1,3 +1,7 @@
+/* ══════════════════════════════════════════════════════════════
+   AppLayout.module.css
+   ══════════════════════════════════════════════════════════════ */
+
 .layout {
   display: flex;
   min-height: 100vh;
@@ -9,8 +13,14 @@
   padding: 32px 36px;
   overflow-y: auto;
   min-width: 0;
+  background: var(--bg);
 }
 
-@media (max-width: 768px) {
-  .main { padding: 20px 16px; }
+@media (max-width: 900px) {
+  .main { padding: 20px 18px; }
+}
+
+@media (max-width: 600px) {
+  .layout { flex-direction: column; }
+  .main { padding: 16px; }
 }
